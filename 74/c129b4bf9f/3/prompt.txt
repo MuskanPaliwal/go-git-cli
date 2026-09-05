@@ -1,0 +1,43 @@
+Several findings are already fixed locally, but two P1 wrong-target bugs still reproduce. I recommend retaining the existing fixes and addressing target selection before merge.
+
+  The full assessment and prioritized plan (PR_76_CURRENT_ASSESSMENT.md) records source locations, reproductions, and dispositions.
+
+  Standards findings:
+
+   Finding                   Current assessment
+  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Symlink followed by ..    P1 remains. With jump → real/sub, reads of jump/../cfg return real/cfg, but writes change the distinct cfg.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Ignored GIT_CONFIG        P1 remains. Modern and legacy writes modify repository config instead of the environment-selected file.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Repository validation     P2 partly fixed. Explicit empty GIT_DIR is rejected; discovered empty .git, malformed HEAD, and incomplete linked-worktree metadata still permit invalid writes.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Explicit empty --file     Fixed locally. Reads and writes match Git in both command forms; repository contents stay unchanged.
+
+  The GIT_CONFIG fix needs careful selection rules: explicit --file overrides it, while scope flags conflict with it. Treating every explicit option as an override would remain incorrect. Git
+  documents it as a config-command-specific file selector. Git documentation
+
+  Spec findings:
+
+  - Still reproduced: onbranch:* matches outside a repository and with detached HEAD; relative command-line includes succeed incorrectly; home expansion removes meaningful path components.
+  - Additional confirmed scope: include paths containing symlinks followed by .. also load the wrong file. Fixing home expansion alone would miss this.
+  - Fixed locally: BOM reads and preservation during mutation, the reported POSIX character-class case, and trailing lone CR handling.
+  - Secondary: explicit --system still fails with GIT_CONFIG_NOSYSTEM=1.
+
+  Test decomposition is already done. Deletion performance remains deferred; I haven’t presented the previous timing as a fresh measurement.
+
+  My proposed implementation order is:
+
+  1. Preserve physical path identity in writes, expansion, and includes.
+  2. Correct GIT_CONFIG presence, precedence, and conflicts.
+  3. Complete repository validation while preserving ancestor discovery.
+  4. Correct include-source and branch context.
+  5. Address explicit system access.
+
+  One existing test explicitly expects relative command-line inclusion to succeed—it needs its expectation corrected when that fix is implemented.
+
+  Fresh checks on the dirty checkout passed: full tests, focused race tests, vet, and whitespace checks. CLI comparisons used Git 2.50.1; ordinary mutation failure still preserves bytes, releases the
+  lock, and permits the next write. Lint wasn’t rerun.
+
+  The live PR head/base remain unchanged, with no reported CI checks. Source files were preserved; nothing was published. Assessment task oss-acw is closed, and the planned fixes are recorded in
+  unclaimed follow-up oss-w87. let's fix the issues here
