@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.10.5-nightly.202609030626.408372c97",
+  "checkpoint_id": "b8ee1f147630",
+  "strategy": "manual-commit",
+  "branch": "add-config-flags",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "cmd/gogit/config-cmd.go",
+    "cmd/gogit/config-include.go",
+    "cmd/gogit/config-scope.go",
+    "cmd/gogit/config.go",
+    "cmd/gogit/config_cmd_test.go",
+    "cmd/gogit/config_environment_test.go",
+    "cmd/gogit/gitdir.go",
+    "cmd/gogit/main.go",
+    "internal/plumbing/format/config/file.go",
+    "internal/plumbing/format/config/file_test.go",
+    "internal/plumbing/format/config/parser.go",
+    "internal/plumbing/format/config/write.go"
+  ],
+  "sessions": [
+    {
+      "metadata": "/b8/ee1f147630/0/metadata.json",
+      "transcript": "/b8/ee1f147630/0/full.jsonl",
+      "compact_transcript": "/b8/ee1f147630/0/transcript.jsonl",
+      "content_hash": "/b8/ee1f147630/0/content_hash.txt",
+      "prompt": "/b8/ee1f147630/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 495845,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 20027648,
+    "output_tokens": 73960,
+    "api_call_count": 186
+  }
+}
