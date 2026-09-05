@@ -3,7 +3,7 @@
   "checkpoint_id": "74c129b4bf9f",
   "strategy": "manual-commit",
   "branch": "add-config-flags",
-  "checkpoints_count": 5,
+  "checkpoints_count": 6,
   "files_touched": [
     "cmd/gogit/config-cmd.go",
     "cmd/gogit/config-include.go",
@@ -32,13 +32,20 @@
       "compact_transcript": "/74/c129b4bf9f/1/transcript.jsonl",
       "content_hash": "/74/c129b4bf9f/1/content_hash.txt",
       "prompt": "/74/c129b4bf9f/1/prompt.txt"
+    },
+    {
+      "metadata": "/74/c129b4bf9f/2/metadata.json",
+      "transcript": "/74/c129b4bf9f/2/full.jsonl",
+      "compact_transcript": "/74/c129b4bf9f/2/transcript.jsonl",
+      "content_hash": "/74/c129b4bf9f/2/content_hash.txt",
+      "prompt": "/74/c129b4bf9f/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 113299,
+    "input_tokens": 206501,
     "cache_creation_tokens": 0,
-    "cache_read_tokens": 4057344,
-    "output_tokens": 18485,
-    "api_call_count": 52
+    "cache_read_tokens": 5264640,
+    "output_tokens": 29893,
+    "api_call_count": 72
   }
 }

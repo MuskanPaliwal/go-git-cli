@@ -1,0 +1,71 @@
+I want to discuss and possibly work on the remaining findings from the review of go-git/cli PR #76.
+
+First, independently review and assess the current state. You own that assessment; this handoff is starting context, not proof that every finding still needs a change. The previous task was a review, which is complete. The latest request was to create this handoff, not to implement fixes or publish the review.
+
+Context
+
+- Repository: go-git/cli. PR: https://github.com/go-git/cli/pull/76. Linked issue: https://github.com/go-git/cli/issues/12. Branch: add-config-flags. The configured fork is MuskanPaliwal/go-git-cli.
+- Review date: September 5, 2026. Published head was 862151d6d7675267b33c75be00510dc1090b8348; base was 4381b6f3325fe2398bedd3a0dae7355e1d16eeef. Both were rechecked on GitHub at closeout. Eight commits, fifteen files.
+- The PR implements modern and legacy config inspection/mutation. Reads merge system, global, local, worktree, included, and command-line sources. Writes should target exactly one physical config, preserving source formatting, permissions, symlinks, and successful concurrent updates.
+- The user requested run-playbook. All ten PR-review playbook steps were completed, including three independent model reviews. The verdict was request changes. Spec and Standards findings were kept separate.
+- Locate the saved document titled “PR #76 playbook review” and its companion review draft. They contain exact source locations at the published head, reproduction details, measurements, and every reviewer finding's disposition. A paste-ready draft exists; nothing was posted to GitHub.
+- Entire source session: 01a070c3-762b-7760-97a5-266c9457d901. The review read checkpoint 0825631a1f33 for the latest published fixes. Review Beads task oss-v5p is closed.
+
+Critical workspace distinction
+
+- At review start, the working checkout already contained uncommitted config command, scope, include, discovery, parser, mutation, test, and tracking-setting changes, plus older review documents and an environment-test file. Those edits were preserved and were NOT reviewed as the published PR.
+- The review used a separate detached worktree and binary built from the published head. Do not assume the findings still reproduce in the user's dirty checkout; local edits may already address some or all of them.
+- Entire lists an earlier Codex session, 01a058a4-3717-7aa3-944c-8dd019d6397f, ending September 1 with the prompt “let's address the findings,” and last checkpoint b8ee1f147630. Its metadata associates it with many of the dirty config files. Its transcript was not examined during this handoff, so this is a useful lead, not a conclusion about what it fixed.
+- The review itself added the new review report and draft, and configured Entire in the isolated review worktree. It did not modify production or test source, commit, push, or publish comments. Do not infer source authorship from Entire's files_touched list alone; it includes pre-existing changes.
+
+Confirmed findings on the published head
+
+Standards, act on:
+
+1. P1: resolveWritePath calls filepath.Abs/Clean before resolving filesystem components. A symlink followed by a parent-directory component can make a write replace a different existing config than Git does, with exit 0.
+2. P1: explicitWriteLocation tests whether the file string is nonempty. An explicitly empty --file argument is treated as omitted and silently writes repository config. Git rejects that invocation. The read selector has the same presence-versus-value issue.
+3. P1: GIT_CONFIG is ignored by read/write selection. A command intended to mutate an environment-selected config instead changes repository config and exits 0. Git honors the selector.
+4. P2: discoverGitDir accepts an empty Git metadata directory as a repository, allowing a default write to create its config. Git rejects this case. Validate repository structure before granting mutation authority.
+
+Spec, act on:
+
+1. The parser rejects a valid UTF-8 BOM config with exit 128; Git reads it. A BOM in a global config can block ordinary inspection.
+2. The onbranch wildcard condition matches an absent branch represented by an empty string. Separately, POSIX character classes such as onbranch:[[:alpha:]]* fail to match an alphabetic branch.
+3. A relative include.path supplied through -c is accepted against a synthetic command-line file origin. Git rejects relative command-line includes with “relative config includes must come from files.” Absolute command-line includes are valid. The earlier checkpoint explicitly intended relative-include support, but the review reproduced that this disagrees with native Git.
+4. expandPath lexically normalizes the suffix after home expansion, changing path identity when symlinks and parent-directory components are involved. Git preserves that suffix.
+
+Consider, not ranked as primary blockers:
+
+- Explicit --system incorrectly fails when GIT_CONFIG_NOSYSTEM=1; Git still permits explicit access.
+- An unquoted terminal lone CR is retained in a value where Git trims it.
+- Repeated deletion scans scale poorly: median of three executions for --unset-all on 10,000 repeated values was about 393 ms in this PR versus 7 ms in Git. This is an absolute PR/native-Git comparison, not a measured base-branch regression. Small normal configs were not established as a performance problem.
+- The new config command test suite is 1,438 lines. Splitting by behavior was suggested, but file size alone was not treated as a merge blocker. Production files are already separated.
+
+Dismissed and cleared
+
+- Do not add literal --set just because issue #12 suggested it. Git rejects it; the PR deliberately provides modern config set. Value-pattern matching was explicitly outside this PR's scope.
+- Ordinary failed multivalue mutations release the lock, preserve the original, and allow an immediate subsequent write. Existing transaction tests exercise real file bytes, modes, symlink targets, and retention of successfully reported concurrent mutations.
+- Atomic locking is not the cause of the three wrong-target findings. The wrong target is selected before the lock protects it.
+- No hard-stop cleanup or power-loss durability proof was obtained. Do not promote passing ordinary-error cleanup into either guarantee.
+
+Before implementation
+
+- Find the repository from the current directory or usual workspace, and read local agent/repository instructions.
+- Re-check live PR head, base, CI state, current diffs, and earlier fix-session context. Decide which findings remain real, already solved, stale, over-scoped, or better handled differently.
+- Inspect the saved full review, relevant symbols, tests, and native Git behavior. Independently assess the changed boundaries before editing, while using prior evidence to avoid repeating the entire completed review unnecessarily.
+- Start with a comparison of published-head findings against existing local changes. Preserve all unrelated work. Do not reset, discard, or overwrite the dirty checkout.
+- The next concrete deliverable is that assessment and a prioritized fix plan. Implement only when the user's receiving-session instructions authorize it.
+
+Validation if fixes are authorized
+
+- Reproduce each remaining failure through the actual CLI with isolated repository and configuration environments. Assert stdout, exit status, and durable file contents; for wrong-target cases, inspect both intended and unintended files.
+- Add meaningful regression coverage at the owning boundary. Check that a failed write leaves no lock and that the next real write succeeds.
+- Prior published-head checks passed: go test ./..., focused race tests for the config-format package and gogit command package, go vet ./..., golangci-lint v2.12.2, and whitespace checks. Native comparisons used Git 2.50.0 on macOS. These results do not validate the current dirty checkout.
+- Lint initially encountered another running linter, then passed using --allow-parallel-runners with a separate cache. Windows runtime and exhaustive Git conformance were not exercised.
+
+Output and preferences
+
+- Lead with current findings and recommendation, followed by the plan or authorized patch summary. Keep Spec and Standards separate and distinguish reproduced behavior from inference.
+- The user prefers concrete examples and gut-level intuition when learning, and short comments only for non-obvious constraints. Keep process metadata out of source comments.
+- Use Beads for durable follow-up work and close completed tasks. Do not reopen the completed review merely to track fixes.
+- Do not push, merge, close GitHub issues or PRs, label, or post public comments unless the user explicitly authorizes that action. No unanswered clarification or approval question remained at review closeout.
