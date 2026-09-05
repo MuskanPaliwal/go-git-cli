@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.10.5-nightly.202609030626.408372c97",
+  "checkpoint_id": "74c129b4bf9f",
+  "strategy": "manual-commit",
+  "branch": "add-config-flags",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "cmd/gogit/config-cmd.go",
+    "cmd/gogit/config-include.go",
+    "cmd/gogit/config-scope.go",
+    "cmd/gogit/config.go",
+    "cmd/gogit/config_cmd_test.go",
+    "cmd/gogit/config_environment_test.go",
+    "cmd/gogit/gitdir.go",
+    "cmd/gogit/main.go",
+    "internal/plumbing/format/config/file.go",
+    "internal/plumbing/format/config/file_test.go",
+    "internal/plumbing/format/config/parser.go",
+    "internal/plumbing/format/config/write.go"
+  ],
+  "sessions": [
+    {
+      "metadata": "/74/c129b4bf9f/0/metadata.json",
+      "transcript": "/74/c129b4bf9f/0/full.jsonl",
+      "compact_transcript": "/74/c129b4bf9f/0/transcript.jsonl",
+      "content_hash": "/74/c129b4bf9f/0/content_hash.txt",
+      "prompt": "/74/c129b4bf9f/0/prompt.txt"
+    }
+  ]
+}

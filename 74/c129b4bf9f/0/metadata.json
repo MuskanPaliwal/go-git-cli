@@ -1,0 +1,44 @@
+{
+  "cli_version": "0.10.5-nightly.202609030626.408372c97",
+  "checkpoint_id": "74c129b4bf9f",
+  "session_id": "01a058a4-3717-7aa3-944c-8dd019d6397f",
+  "strategy": "manual-commit",
+  "created_at": "2026-09-05T10:05:47.313716Z",
+  "branch": "add-config-flags",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "cmd/gogit/config-cmd.go",
+    "cmd/gogit/config-include.go",
+    "cmd/gogit/config-scope.go",
+    "cmd/gogit/config.go",
+    "cmd/gogit/config_cmd_test.go",
+    "cmd/gogit/config_environment_test.go",
+    "cmd/gogit/gitdir.go",
+    "cmd/gogit/main.go",
+    "internal/plumbing/format/config/file.go",
+    "internal/plumbing/format/config/file_test.go",
+    "internal/plumbing/format/config/parser.go",
+    "internal/plumbing/format/config/write.go"
+  ],
+  "agent": "Codex",
+  "model": "gpt-5.6-sol",
+  "turn_id": "015ae9a6fce4",
+  "checkpoint_transcript_start": 1235,
+  "transcript_lines_at_start": 1235,
+  "compact_transcript_start": 189,
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-09-05T10:05:47.208498Z",
+    "agent_lines": 1223,
+    "agent_removed": 742,
+    "human_added": 706,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1929,
+    "total_lines_changed": 2671,
+    "agent_percentage": 73.56795207787346,
+    "metric_version": 2
+  }
+}
